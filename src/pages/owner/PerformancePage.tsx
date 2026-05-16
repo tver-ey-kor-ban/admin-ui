@@ -12,12 +12,12 @@ function StarRating({ rating }: { rating?: number }) {
 }
 
 export function PerformancePage() {
-  const { shopId, isOwner, isAdmin } = useAuth();
-  // Owners/admins see full team performance; mechanics see own
+  const { shopId, user, isOwner, isAdmin } = useAuth();
+  // Owners/admins see full team performance; mechanics see their own record
   const url = shopId && (isOwner || isAdmin)
-    ? API.SHOPS.MECHANICS_PERFORMANCE(shopId)
-    : shopId
-    ? API.SHOPS.MY_PERFORMANCE(shopId)
+    ? API.MECHANIC.PERFORMANCE(shopId)
+    : shopId && user
+    ? API.MECHANIC.MECHANIC_PERFORMANCE(shopId, user.id)
     : null;
 
   const { data, loading, error, refetch } = useFetch<PerformanceResponse | MechanicStats[]>(url);
@@ -38,7 +38,9 @@ export function PerformancePage() {
         <Button variant="secondary" size="sm" onClick={refetch}>Refresh</Button>
       </div>
 
-      {loading ? <LoadingSpinner /> : error ? <div className="text-red-600 bg-red-50 rounded-lg p-4">{error}</div> : (
+      {loading ? <LoadingSpinner /> : (error && error !== 'Not Found') ? (
+        <div className="text-red-600 bg-red-50 rounded-lg p-4">{error}</div>
+      ) : (
         <>
           {/* Summary */}
           {summary && (
@@ -92,9 +94,9 @@ export function PerformancePage() {
             </div>
           )}
 
-          {isTeam && mechanics.length === 0 && !loading && (
+          {(error === 'Not Found' || (!loading && isTeam && mechanics.length === 0)) && (
             <div className="bg-white rounded-xl p-12 text-center text-gray-400 shadow-sm border border-gray-100">
-              No performance data available
+              No performance data recorded yet
             </div>
           )}
         </>

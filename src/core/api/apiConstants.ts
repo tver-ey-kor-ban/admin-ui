@@ -22,9 +22,6 @@ export const API = {
     PRODUCT: (shopId: number, pid: number) => `/shops/${shopId}/products/${pid}`,
     SERVICES: (id: number) => `/shops/${id}/services`,
     SERVICE: (shopId: number, sid: number) => `/shops/${shopId}/services/${sid}`,
-    MECHANICS_PERFORMANCE: (id: number) => `/shops/${id}/mechanics/performance`,
-    MECHANICS_PERFORMANCE_TOP: (id: number) => `/shops/${id}/mechanics/performance/top`,
-    MY_PERFORMANCE: (id: number) => `/shops/${id}/mechanics/my-performance`,
   },
   MECHANIC: {
     PENDING_BOOKINGS: (shopId: number) => `/mechanic/shops/${shopId}/pending-bookings`,
@@ -36,6 +33,8 @@ export const API = {
     ORDER_READY: (shopId: number, orderId: number) => `/mechanic/shops/${shopId}/orders/${orderId}/ready`,
     NOTIFICATIONS: '/mechanic/my-notifications',
     NOTIFICATION_READ: (id: number) => `/mechanic/notifications/${id}/read`,
+    PERFORMANCE: (shopId: number) => `/shops/${shopId}/mechanics/performance`,
+    MECHANIC_PERFORMANCE: (shopId: number, mechanicId: number) => `/shops/${shopId}/mechanics/performance/${mechanicId}`,
   },
   QUOTATIONS: {
     SHOP_LIST: (shopId: number) => `/quotations/shops/${shopId}`,
@@ -49,12 +48,12 @@ export const API = {
     SHOP_DETAIL: (shopId: number, iId: number) => `/invoices/shops/${shopId}/${iId}`,
     CREATE: (shopId: number) => `/invoices/shops/${shopId}`,
     SEND: (shopId: number, iId: number) => `/invoices/shops/${shopId}/${iId}/send`,
-    PAYMENT: (shopId: number, iId: number) => `/invoices/shops/${shopId}/${iId}/payments`,
+    PAYMENT: (shopId: number, iId: number) => `/invoices/shops/${shopId}/${iId}/record-payment`,
   },
   REPAIR_PROGRESS: {
-    SHOP_LIST: (shopId: number) => `/repair-progress/shops/${shopId}`,
-    CREATE: (shopId: number) => `/repair-progress/shops/${shopId}`,
-    UPDATE: (shopId: number, pid: number) => `/repair-progress/shops/${shopId}/${pid}`,
+    GET: (shopId: number, apptId: number) => `/repair-progress/shops/${shopId}/appointments/${apptId}`,
+    CREATE: (shopId: number, apptId: number) => `/repair-progress/shops/${shopId}/appointments/${apptId}`,
+    ADVANCE: (shopId: number, apptId: number) => `/repair-progress/shops/${shopId}/appointments/${apptId}/update`,
   },
   ADMIN: {
     USERS: '/admin/users',
@@ -64,6 +63,7 @@ export const API = {
     USER_DELETE: (id: number) => `/admin/users/${id}`,
     SHOPS: '/admin/shops',
     SHOP: (id: number) => `/admin/shops/${id}`,
+    SHOP_STATUS: (id: number) => `/admin/shops/${id}/status`,
     SHOP_DELETE: (id: number) => `/admin/shops/${id}`,
     APPOINTMENTS: '/admin/appointments',
     ORDERS: '/admin/orders',
@@ -76,7 +76,5 @@ export const API = {
   CUSTOMERS: {
     SHOP_APPOINTMENTS: (shopId: number) => `/customers/shops/${shopId}/appointments`,
     APPT_STATUS: (shopId: number, apptId: number) => `/customers/shops/${shopId}/appointments/${apptId}/status`,
-    SHOP_ORDERS: (shopId: number) => `/product-orders/shops/${shopId}/orders`,
-    ORDER_STATUS: (shopId: number, orderId: number) => `/product-orders/shops/${shopId}/orders/${orderId}/status`,
   },
 } as const;
