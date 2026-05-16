@@ -10,9 +10,6 @@ import { Modal } from '../../components/ui/Modal';
 import { Textarea } from '../../components/ui/Input';
 import type { PendingOrder } from '../../core/types';
 
-const STATUS_FILTERS = ['all', 'pending', 'confirmed', 'processing', 'ready', 'completed', 'cancelled'] as const;
-type StatusFilter = typeof STATUS_FILTERS[number];
-
 interface OrdersData {
   orders?: PendingOrder[];
   count?: number;
@@ -20,13 +17,7 @@ interface OrdersData {
 
 export function OrdersPage() {
   const { shopId } = useAuth();
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('pending');
-
-  const url = shopId
-    ? statusFilter === 'all'
-      ? API.CUSTOMERS.SHOP_ORDERS(shopId)
-      : `${API.CUSTOMERS.SHOP_ORDERS(shopId)}?order_status=${statusFilter}`
-    : null;
+  const url = shopId ? API.MECHANIC.PENDING_ORDERS(shopId) : null;
 
   const { data, loading, error, refetch } = useFetch<OrdersData | PendingOrder[]>(url);
 
@@ -87,23 +78,6 @@ export function OrdersPage() {
 
   return (
     <div className="space-y-4">
-      {/* Status filter tabs */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
-              statusFilter === s
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
         <Button variant="secondary" size="sm" onClick={refetch}>Refresh</Button>
@@ -157,7 +131,7 @@ export function OrdersPage() {
           ))}
           {orders.length === 0 && (
             <div className="bg-white rounded-xl p-12 text-center text-gray-400 shadow-sm border border-gray-100">
-              No {statusFilter === 'all' ? '' : statusFilter} orders
+              No pending orders
             </div>
           )}
         </div>

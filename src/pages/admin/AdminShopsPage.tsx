@@ -9,14 +9,27 @@ import type { Shop, PaginatedResponse } from '../../core/types';
 
 export function AdminShopsPage() {
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
   const limit = 20;
-  // Admin API uses skip/limit (offset-based), same as /admin/users
+
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (search) params.set('search', search);
+
   const { data, loading, error, refetch } = useFetch<PaginatedResponse<Shop>>(
-    `${API.ADMIN.SHOPS}?skip=${(page - 1) * limit}&limit=${limit}`
+    `${API.ADMIN.SHOPS}?${params}`
   );
 
   const shops: Shop[] = data?.items ?? (Array.isArray(data) ? (data as Shop[]) : []);
   const total = data?.total ?? shops.length;
+
+  const toggleShopStatus = async (shop: Shop) => {
+    try {
+      await apiClient.put(`${API.ADMIN.SHOP_STATUS(shop.id)}?is_active=${!shop.is_active}`);
+      refetch();
+    } catch (e: unknown) {
+      alert((e as { response?: { data?: { detail?: string } } }).response?.data?.detail ?? 'Failed to update shop status');
+    }
+  };
 
   const deleteShop = async (shop: Shop) => {
     if (!confirm(`Delete shop "${shop.name}"? This cannot be undone.`)) return;
@@ -30,8 +43,14 @@ export function AdminShopsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">Total: {total} shops</p>
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-wrap gap-3">
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="flex-1 min-w-48 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+        />
         <Button variant="secondary" size="sm" onClick={refetch}>Refresh</Button>
       </div>
 
@@ -64,7 +83,15 @@ export function AdminShopsPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => deleteShop(shop)} className="text-red-600 hover:underline text-xs">Delete</button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleShopStatus(shop)}
+                          className={`text-xs hover:underline ${shop.is_active ? 'text-yellow-600' : 'text-green-600'}`}
+                        >
+                          {shop.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button onClick={() => deleteShop(shop)} className="text-red-600 hover:underline text-xs">Delete</button>
+                      </div>
                     </td>
                   </tr>
                 ))}

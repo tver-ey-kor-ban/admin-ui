@@ -20,7 +20,7 @@ export function UsersPage() {
   const [page, setPage] = useState(1);
   const limit = 20;
 
-  const params = new URLSearchParams({ skip: String((page - 1) * limit), limit: String(limit) });
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (search) params.set('search', search);
   if (filterActive !== '') params.set('is_active', filterActive);
 
@@ -35,7 +35,7 @@ export function UsersPage() {
   const toggleStatus = async (user: AdminUser) => {
     setActing(true);
     try {
-      await apiClient.put(API.ADMIN.USER_STATUS(user.id), { is_active: !user.is_active });
+      await apiClient.put(`${API.ADMIN.USER_STATUS(user.id)}?is_active=${!user.is_active}`);
       refetch();
     } finally {
       setActing(false);
@@ -46,7 +46,7 @@ export function UsersPage() {
     if (!roleModal) return;
     setActing(true);
     try {
-      await apiClient.put(API.ADMIN.USER_ROLE(roleModal.id), { roles: newRole });
+      await apiClient.put(`${API.ADMIN.USER_ROLE(roleModal.id)}?is_superuser=${newRole === 'admin'}`);
       setRoleModal(null);
       refetch();
     } finally {
@@ -171,8 +171,7 @@ export function UsersPage() {
             onChange={(e) => setNewRole(e.target.value)}
           >
             <option value="user">User</option>
-            <option value="mechanic">Mechanic</option>
-            <option value="owner">Owner</option>
+            <option value="admin">Admin (superuser)</option>
           </Select>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setRoleModal(null)}>Cancel</Button>

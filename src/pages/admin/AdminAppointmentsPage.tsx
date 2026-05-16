@@ -6,11 +6,18 @@ import { Badge, statusBadge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import type { AdminAppointment, PaginatedResponse } from '../../core/types';
 
+const STATUSES = ['', 'pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'rejected'] as const;
+
 export function AdminAppointmentsPage() {
   const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('');
   const limit = 20;
+
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (statusFilter) params.set('status', statusFilter);
+
   const { data, loading, error, refetch } = useFetch<PaginatedResponse<AdminAppointment>>(
-    `${API.ADMIN.APPOINTMENTS}?skip=${(page - 1) * limit}&limit=${limit}`
+    `${API.ADMIN.APPOINTMENTS}?${params}`
   );
 
   const appointments: AdminAppointment[] = data?.items ?? (Array.isArray(data) ? (data as AdminAppointment[]) : []);
@@ -20,8 +27,17 @@ export function AdminAppointmentsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">Total: {total}</p>
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-wrap gap-3 items-center">
+        <select
+          value={statusFilter}
+          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:border-blue-500"
+        >
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>{s === '' ? 'All Statuses' : s.replace('_', ' ')}</option>
+          ))}
+        </select>
+        <p className="flex-1 text-sm text-gray-500">Total: {total}</p>
         <Button variant="secondary" size="sm" onClick={refetch}>Refresh</Button>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

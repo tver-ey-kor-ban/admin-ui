@@ -15,10 +15,16 @@ export interface UserProfile {
   created_at?: string;
 }
 
+export interface ShopRole {
+  shop_id: number;
+  role: string;
+}
+
 export interface UserRolesResponse {
   username: string;
   roles: string[];
   is_superuser: boolean;
+  shop_roles: ShopRole[];
 }
 
 // My Shops
@@ -49,10 +55,23 @@ export interface PaginatedResponse<T> {
 
 // Admin
 export interface AdminStats {
-  total_users: number;
-  total_shops: number;
-  total_appointments: number;
-  total_revenue: number;
+  users: { total: number; active: number; inactive: number; admins: number };
+  shops: { total: number; active: number; inactive: number };
+  catalog: { products: number; services: number };
+  appointments: { total: number; pending: number; completed: number; cancelled: number };
+  orders: { total: number; pending: number; completed: number; cancelled: number };
+  revenue: { appointments: number; orders: number; total: number };
+}
+
+export interface AdminDailyStats {
+  period_days: number;
+  start_date: string;
+  end_date: string;
+  new_users: number;
+  new_shops: number;
+  new_appointments: number;
+  new_orders: number;
+  revenue: { appointments: number; orders: number; total: number };
 }
 
 export interface AdminUser {
@@ -233,21 +252,21 @@ export interface Payment {
 // Repair Progress
 export type RepairStage =
   | 'received'
-  | 'diagnosing'
-  | 'waiting_parts'
-  | 'in_progress'
+  | 'diagnosed'
+  | 'parts_ordered'
+  | 'in_repair'
   | 'quality_check'
-  | 'ready_for_pickup'
-  | 'completed';
+  | 'ready'
+  | 'delivered';
 
 export const REPAIR_STAGES: RepairStage[] = [
   'received',
-  'diagnosing',
-  'waiting_parts',
-  'in_progress',
+  'diagnosed',
+  'parts_ordered',
+  'in_repair',
   'quality_check',
-  'ready_for_pickup',
-  'completed',
+  'ready',
+  'delivered',
 ];
 
 export interface RepairProgress {

@@ -69,12 +69,12 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
 }
 
 export function Sidebar() {
-  const { user, isAdmin, isOwner, shops, shopId, setActiveShop, logout } = useAuth();
+  const { user, isAdmin, isOwner, isMechanic, shops, shopId, setActiveShop, logout } = useAuth();
 
-  const showShopSection = isAdmin || isOwner;
-  const shopNav = OWNER_NAV; // All owner pages are visible to both admin and owner
+  const showShopSection = isOwner || isMechanic;
+  const shopNav = OWNER_NAV;
 
-  const roleLabel = isAdmin ? 'Administrator' : 'Shop Owner';
+  const roleLabel = isAdmin ? 'Administrator' : isOwner ? 'Shop Owner' : 'Mechanic';
   const displayName = user?.full_name || user?.username || 'User';
   const initials = displayName.charAt(0).toUpperCase();
 
