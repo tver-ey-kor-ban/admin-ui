@@ -149,15 +149,6 @@ export function LoginPage() {
           </Button>
         </form>
 
-        {/* Test accounts hint */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs font-medium text-gray-500 mb-2">Test accounts</p>
-          <div className="space-y-1 text-xs text-gray-600">
-            <p><span className="font-medium">Admin:</span> admin / admin123</p>
-            <p><span className="font-medium">Owner:</span> owner1 / owner123</p>
-            <p><span className="font-medium">Mechanic:</span> mechanic1 / mechanic123</p>
-          </div>
-        </div>
       </div>
     </div>
   );
