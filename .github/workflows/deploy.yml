@@ -36,39 +36,3 @@ jobs:
           # Set VITE_API_URL in GitHub → Settings → Variables (Repository variables)
           VITE_API_URL: ${{ vars.VITE_API_URL }}
 
-      # ── Render static site deploy ─────────────────────────────────────────
-      # How to set up:
-      #   1. Go to your Render dashboard → the static site service for this frontend
-      #   2. Settings → Deploy Hook → copy the URL
-      #   3. GitHub → Settings → Secrets → New repository secret
-      #      Name: RENDER_DEPLOY_HOOK_URL   Value: <the hook URL>
-      # Render will pull from the repo and re-build on its own after this trigger.
-      - name: Trigger Render deploy
-        run: |
-          curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-        # Remove this step if you are NOT deploying to Render.
-
-      # ── Alternative: Vercel ───────────────────────────────────────────────
-      # Uncomment the block below and delete the Render step above.
-      #
-      # - name: Deploy to Vercel
-      #   uses: amondnet/vercel-action@v25
-      #   with:
-      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
-      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-      #     vercel-args: '--prod'
-      #     working-directory: ./
-
-      # ── Alternative: Netlify ──────────────────────────────────────────────
-      # Uncomment the block below and delete the Render step above.
-      #
-      # - name: Deploy to Netlify
-      #   uses: nwtgck/actions-netlify@v3
-      #   with:
-      #     publish-dir: './dist'
-      #     production-branch: main
-      #     production-deploy: true
-      #   env:
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

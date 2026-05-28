@@ -15,6 +15,7 @@ export const API = {
     UPDATE: (id: number) => `/shops/${id}`,
     DELETE: (id: number) => `/shops/${id}`,
     MY_SHOPS: '/shops/my-shops',
+    STATISTICS: (id: number) => `/shops/${id}/statistics`,
     MEMBERS: (id: number) => `/shops/${id}/members`,
     MEMBER_ROLE: (shopId: number, userId: number) => `/shops/${shopId}/members/${userId}/role`,
     MEMBER_DELETE: (shopId: number, userId: number) => `/shops/${shopId}/members/${userId}`,
@@ -34,7 +35,7 @@ export const API = {
     NOTIFICATIONS: '/mechanic/my-notifications',
     NOTIFICATION_READ: (id: number) => `/mechanic/notifications/${id}/read`,
     PERFORMANCE: (shopId: number) => `/shops/${shopId}/mechanics/performance`,
-    MECHANIC_PERFORMANCE: (shopId: number, mechanicId: number) => `/shops/${shopId}/mechanics/performance/${mechanicId}`,
+    MECHANIC_PERFORMANCE: (shopId: number, mechanicId: number) => `/shops/${shopId}/mechanics/${mechanicId}/performance`,
   },
   QUOTATIONS: {
     SHOP_LIST: (shopId: number) => `/quotations/shops/${shopId}`,

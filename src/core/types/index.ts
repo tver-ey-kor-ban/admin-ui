@@ -10,7 +10,7 @@ export interface UserProfile {
   email: string;
   username: string;
   full_name: string;
-  roles: string;
+  roles: string[];
   is_active: boolean;
   created_at?: string;
 }
@@ -79,7 +79,7 @@ export interface AdminUser {
   email: string;
   username: string;
   full_name: string;
-  roles: string;
+  roles: string[];
   is_active: boolean;
   is_superuser: boolean;
   created_at?: string;
@@ -115,6 +115,7 @@ export interface Product {
   stock_quantity?: number;
   category_id?: number;
   sku?: string;
+  image_url?: string;
   is_available?: boolean;
   created_at?: string;
 }
@@ -126,6 +127,7 @@ export interface ProductForm {
   stock_quantity: number;
   category_id: number | null;
   sku: string;
+  image_url: string;
 }
 
 // Services
@@ -165,23 +167,29 @@ export interface PendingBooking {
   customer: { id: number; name: string; phone: string };
   vehicle_info?: string;
   appointment_date?: string;
+  service_price?: number;
+  mobile_service_fee?: number;
   total_amount?: number;
   notes?: string;
   service_name?: string;
 }
 
 export interface PendingBookingsResponse {
-  count: number;
-  bookings: PendingBooking[];
+  total: number;
+  page: number;
+  limit: number;
+  items: PendingBooking[];
 }
 
 // Orders
 export interface PendingOrder {
-  id: number;
-  customer?: { id: number; name: string };
-  items?: OrderItem[];
+  order_id: number;
+  customer?: { id: number; name: string; phone?: string };
+  items_count?: number;
   total_amount?: number;
-  status: string;
+  pickup_date?: string;
+  notes?: string;
+  status?: string;
   created_at?: string;
 }
 
@@ -198,7 +206,7 @@ export interface Quotation {
   appointment_id?: number;
   title?: string;
   description?: string;
-  status: 'draft' | 'sent' | 'approved' | 'rejected' | 'expired';
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
   labor_cost?: number;
   parts_cost?: number;
   tax_amount?: number;

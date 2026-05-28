@@ -26,7 +26,7 @@ export function OwnerDashboardPage() {
   const { data: bookingsData, loading: bLoading } = useFetch<PendingBookingsResponse>(
     shopId ? API.MECHANIC.PENDING_BOOKINGS(shopId) : null
   );
-  const { data: ordersData, loading: oLoading } = useFetch<PendingOrder[] | { orders: PendingOrder[] }>(
+  const { data: ordersData, loading: oLoading } = useFetch<{ total: number; items: PendingOrder[] }>(
     shopId ? API.MECHANIC.PENDING_ORDERS(shopId) : null
   );
 
@@ -44,8 +44,8 @@ export function OwnerDashboardPage() {
     );
   }
 
-  const pendingBookings = bookingsData?.count ?? 0;
-  const orders = Array.isArray(ordersData) ? ordersData : (ordersData as { orders?: PendingOrder[] })?.orders ?? [];
+  const pendingBookings = bookingsData?.total ?? 0;
+  const orders = ordersData?.items ?? [];
 
   return (
     <div className="space-y-6">

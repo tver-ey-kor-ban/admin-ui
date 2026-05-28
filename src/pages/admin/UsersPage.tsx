@@ -124,7 +124,7 @@ export function UsersPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => { setNewRole(u.roles); setRoleModal(u); }}
+                          onClick={() => { setNewRole(u.is_superuser ? 'admin' : 'user'); setRoleModal(u); }}
                           className="text-blue-600 hover:underline text-xs"
                         >
                           Role

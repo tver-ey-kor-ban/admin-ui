@@ -19,7 +19,7 @@ export function BookingsPage() {
   const [notes, setNotes] = useState('');
   const [acting, setActing] = useState(false);
 
-  const bookings = data?.bookings ?? [];
+  const bookings = data?.items ?? [];
   const fmt = (d?: string) => d ? new Date(d).toLocaleString() : '—';
 
   const openModal = (booking: PendingBooking, action: 'accept' | 'reject') => {
@@ -49,7 +49,7 @@ export function BookingsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">{data?.count ?? 0} pending bookings</p>
+        <p className="text-sm text-gray-500">{data?.total ?? 0} pending bookings</p>
         <Button variant="secondary" size="sm" onClick={refetch}>Refresh</Button>
       </div>
 
