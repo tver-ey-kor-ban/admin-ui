@@ -330,3 +330,12 @@ export interface MechanicStats {
   average_rating?: number;
   rank?: number;
 }
+
+export interface ProductCategory {
+  id: number;
+  name: string;
+  description?: string;
+  parent_id?: number | null;
+  full_path?: string;
+}
+

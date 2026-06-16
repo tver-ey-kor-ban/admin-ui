@@ -7,8 +7,8 @@ import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
-import { Input, Textarea } from '../../components/ui/Input';
-import type { Product, ProductForm, PaginatedResponse } from '../../core/types';
+import { Input, Textarea, Select } from '../../components/ui/Input';
+import type { Product, ProductForm, PaginatedResponse, ProductCategory } from '../../core/types';
 
 const EMPTY: ProductForm = {
   name: '', description: '', price: 0, stock_quantity: 0,
@@ -138,6 +138,9 @@ export function ProductsPage() {
     shopId ? `${API.SHOPS.PRODUCTS(shopId)}?limit=100` : null
   );
 
+  const { data: categoriesData } = useFetch<ProductCategory[]>('/categories?all_levels=true');
+  const categories = Array.isArray(categoriesData) ? categoriesData : [];
+
   const [modal, setModal] = useState<{ product?: Product; open: boolean }>({ open: false });
   const [form, setForm] = useState<ProductForm>(EMPTY);
   const [saving, setSaving] = useState(false);
@@ -163,20 +166,59 @@ export function ProductsPage() {
     setModal({ product: p, open: true });
   };
 
+  const dataURLtoFile = (dataurl: string, filename: string): File | null => {
+    const arr = dataurl.split(',');
+    if (arr.length < 2) return null;
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    if (!mimeMatch) return null;
+    const mime = mimeMatch[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
   const save = async () => {
     if (!shopId) return;
     setSaving(true);
     try {
+      const hasNewImageFile = form.image_url.startsWith('data:');
       const body = {
         ...form,
         category_id: form.category_id || undefined,
-        image_url: form.image_url || undefined,
+        image_url: hasNewImageFile ? undefined : form.image_url || undefined,
       };
+
+      let product: Product;
       if (modal.product) {
-        await apiClient.put(API.SHOPS.PRODUCT(shopId, modal.product.id), body);
+        const res = await apiClient.put<Product>(API.SHOPS.PRODUCT(shopId, modal.product.id), body);
+        product = res.data;
       } else {
-        await apiClient.post(API.SHOPS.PRODUCTS(shopId), body);
+        const res = await apiClient.post<Product>(API.SHOPS.PRODUCTS(shopId), body);
+        product = res.data;
       }
+
+      if (hasNewImageFile && product && product.id) {
+        const imageFile = dataURLtoFile(form.image_url, `product_${product.id}.png`);
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append('image', imageFile);
+          
+          await apiClient.post(
+            `${API.SHOPS.PRODUCT(shopId, product.id)}/image`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          );
+        }
+      }
+
       setModal({ open: false });
       refetch();
     } catch (e: unknown) {
@@ -282,13 +324,18 @@ export function ProductsPage() {
               onChange={(e) => setForm({ ...form, sku: e.target.value })}
               placeholder="OIL-5W30"
             />
-            <Input
-              label="Category ID"
-              type="number" min="1"
+            <Select
+              label="Category"
               value={form.category_id ?? ''}
               onChange={(e) => setForm({ ...form, category_id: e.target.value ? parseInt(e.target.value) : null })}
-              placeholder="optional"
-            />
+            >
+              <option value="">Select Category (optional)</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.full_path || cat.name}
+                </option>
+              ))}
+            </Select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="secondary" onClick={() => setModal({ open: false })}>Cancel</Button>
